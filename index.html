@@ -318,8 +318,8 @@ const DEF = {
   notes:['Exact file must be provided before printing','Specify color or black & white when ordering','Specify single-side or double-side printing','Thick or high-ink images cannot be printed double-sided']
 };
 
-let D = JSON.parse(localStorage.getItem('snk3')||'null') || JSON.parse(JSON.stringify(DEF));
-const save = ()=>localStorage.setItem('snk3',JSON.stringify(D));
+let D = JSON.parse(JSON.stringify(DEF));
+const save = ()=>{};
 
 /* ─── STATE ─── */
 let S = {typeId:D.printTypes[0]?.id, side:'single', pages:1};
