@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snickers Printing — Price Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #FF6B35;
+  --accent2: #FF9A3C;
+  --accent3: #FFD166;
+  --green: #80CBC4;
+  --blue: #4FC3F7;
+  --glass: rgba(255,255,255,0.10);
+  --glass-b: rgba(255,255,255,0.18);
+  --muted: rgba(255,255,255,0.55);
+  --radius: 24px;
+  --rsm: 14px;
+  --spring: cubic-bezier(0.34,1.56,0.64,1);
+  --ease: cubic-bezier(0.4,0,0.2,1);
+  --blur: blur(28px) saturate(180%);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;min-height:100vh;background:#0d0a22;overflow-x:hidden;color:#fff}
+
+/* ── BG ── */
+.bg{position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 85% 65% at 18% 8%,rgba(255,107,53,.34) 0%,transparent 55%),
+    radial-gradient(ellipse 65% 80% at 85% 88%,rgba(79,195,247,.26) 0%,transparent 55%),
+    radial-gradient(ellipse 55% 55% at 55% 48%,rgba(206,147,216,.18) 0%,transparent 60%),
+    linear-gradient(155deg,#0d0a22 0%,#14103c 48%,#0a1128 100%);
+  animation:bgPulse 14s ease-in-out infinite alternate}
+@keyframes bgPulse{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(20deg)}}
+.orb{position:fixed;border-radius:50%;filter:blur(70px);pointer-events:none;z-index:0;animation:orbDrift linear infinite}
+.o1{width:430px;height:430px;background:rgba(255,107,53,.22);top:-130px;left:-130px;animation-duration:20s}
+.o2{width:380px;height:380px;background:rgba(79,195,247,.18);bottom:-100px;right:-100px;animation-duration:26s;animation-direction:reverse}
+.o3{width:270px;height:270px;background:rgba(206,147,216,.17);top:36%;left:57%;animation-duration:17s;animation-delay:-7s}
+@keyframes orbDrift{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(38px,-26px) scale(1.08)}50%{transform:translate(-16px,44px) scale(.93)}75%{transform:translate(52px,16px) scale(1.05)}}
+
+/* ── GLASS ── */
+.glass{background:var(--glass);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--glass-b);box-shadow:0 8px 40px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.14)}
+
+/* ── LAYOUT ── */
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:10px 14px 40px}
+
+/* ── HEADER ── */
+.header{text-align:center;padding:14px 20px 10px;animation:fadeDown .8s var(--spring) both}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-36px)}to{opacity:1;transform:translateY(0)}}
+.badge{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,rgba(255,107,53,.28),rgba(255,154,60,.18));border:1px solid rgba(255,107,53,.4);border-radius:50px;padding:4px 14px;margin-bottom:8px;backdrop-filter:blur(20px);animation:badgePulse 3s ease-in-out infinite}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(255,107,53,.3)}50%{box-shadow:0 0 0 8px rgba(255,107,53,0)}}
+.badge-icon{font-size:14px;animation:spin 9s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.badge-text{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--accent2)}
+h1{font-size:clamp(1.3rem,4vw,2rem);font-weight:900;letter-spacing:-1px;line-height:1.1;color:#fff;text-shadow:0 2px 28px rgba(255,107,53,.38);margin-bottom:4px}
+h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{font-size:.8rem;font-weight:400;color:var(--muted);max-width:380px;margin:0 auto}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:6px;background:rgba(0,0,0,.28);border-radius:50px;padding:5px;backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);margin-bottom:14px;width:fit-content;margin-left:auto;margin-right:auto;animation:fadeUp .8s .1s both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.tab{padding:10px 30px;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s var(--ease);color:var(--muted);background:transparent;letter-spacing:.4px}
+.tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 20px rgba(255,107,53,.4)}
+
+/* ── PAGE ── */
+.page{display:none;animation:pageIn .45s var(--ease) both}
+.page.active{display:block}
+@keyframes pageIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SECTION LABEL ── */
+.slabel{font-size:10.5px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent2);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.slabel::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,154,60,.38),transparent)}
+
+/* ── CALC CARD ── */
+.ccard{border-radius:var(--radius);padding:28px;margin-bottom:20px;position:relative;overflow:hidden;animation:fadeUp .7s var(--spring) both}
+.ccard::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.055) 0%,transparent 55%);pointer-events:none}
+
+/* ── TYPE CARDS ── */
+.type-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:26px}
+.tcard{border-radius:var(--rsm);padding:20px 14px;text-align:center;cursor:pointer;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);transition:all .4s var(--spring);position:relative;overflow:hidden;user-select:none}
+.tcard::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--accent),var(--accent2));opacity:0;transition:opacity .3s}
+.tcard:hover{transform:translateY(-3px) scale(1.025);border-color:rgba(255,107,53,.38)}
+.tcard.sel{border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,107,53,.28),0 8px 28px rgba(255,107,53,.22);transform:translateY(-4px) scale(1.03)}
+.tcard.sel::before{opacity:.14}
+.tcard-icon{font-size:30px;margin-bottom:8px;display:block;position:relative;z-index:1}
+.tcard-name{font-size:14px;font-weight:800;color:#fff;position:relative;z-index:1}
+.tcard-hint{font-size:11px;color:var(--muted);margin-top:4px;position:relative;z-index:1;line-height:1.4}
+
+/* ── SIDE PILLS ── */
+.side-pills{display:flex;gap:8px}
+.pill{flex:1;padding:12px 8px;border-radius:50px;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:var(--muted);font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all .25s var(--ease);text-align:center}
+.pill.active{background:linear-gradient(135deg,rgba(255,107,53,.3),rgba(255,154,60,.2));border-color:var(--accent);color:#fff;box-shadow:0 4px 16px rgba(255,107,53,.25)}
+.double-note{display:none;font-size:11.5px;color:rgba(255,209,102,.75);margin-top:8px;padding:8px 14px;border-radius:10px;background:rgba(255,209,102,.08);border:1px solid rgba(255,209,102,.2)}
+
+/* ── PAGE COUNTER ── */
+.pcounter{display:flex;align-items:center;border-radius:50px;overflow:hidden;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07)}
+.cbtn{width:50px;height:50px;border:none;background:transparent;color:#fff;font-size:24px;cursor:pointer;transition:background .2s;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.cbtn:hover{background:rgba(255,107,53,.22)}
+.cbtn:active{transform:scale(.9)}
+.cinput{flex:1;background:transparent;border:none;outline:none;text-align:center;font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;color:#fff;min-width:0}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
+
+/* ── RESULT ── */
+.result{border-radius:var(--radius);padding:28px 26px;background:linear-gradient(135deg,rgba(255,107,53,.2),rgba(255,154,60,.12),rgba(255,209,102,.07));border:1px solid rgba(255,107,53,.34);box-shadow:0 0 55px rgba(255,107,53,.14),inset 0 1px 0 rgba(255,255,255,.1);position:relative;overflow:hidden;animation:fadeUp .8s .35s both}
+.result-lbl{font-size:10.5px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent2);margin-bottom:6px}
+.result-price{font-size:clamp(2.8rem,9vw,5rem);font-weight:900;letter-spacing:-2px;line-height:1;background:linear-gradient(135deg,#fff 0%,var(--accent2) 55%,var(--accent3) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.result-price.pop{animation:pricePop .38s var(--spring)}
+@keyframes pricePop{from{transform:scale(.82);opacity:0}to{transform:scale(1);opacity:1}}
+.breakdown{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:50px;padding:5px 14px;font-size:12px;font-weight:700;color:rgba(255,255,255,.75)}
+.bulk-chip{background:rgba(128,203,196,.18);border:1px solid rgba(128,203,196,.35);color:var(--green)}
+.info-chip{opacity:.5;font-size:11.5px}
+.na-chip{background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.25);color:#ff8a8a}
+
+/* ── NOTICE ── */
+.notice{border-radius:var(--rsm);padding:16px 18px;background:rgba(255,209,102,.07);border:1px solid rgba(255,209,102,.22);margin-top:18px;animation:fadeUp .8s .5s both}
+.notice-ttl{font-size:10.5px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--accent3);margin-bottom:8px}
+.notice ul{list-style:none}
+.notice li{font-size:12.5px;color:rgba(255,255,255,.62);padding:4px 0;display:flex;gap:8px;align-items:flex-start}
+.notice li::before{content:'›';color:var(--accent2);font-weight:900;flex-shrink:0}
+
+/* ── PRICE LIST ── */
+.plist-card{border-radius:var(--radius);padding:22px 24px;margin-bottom:14px;position:relative;overflow:hidden;transition:transform .2s var(--ease)}
+.plist-card:hover{transform:translateY(-3px)}
+.plc-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.plc-icon{font-size:30px}
+.plc-name{font-size:17px;font-weight:900;color:#fff}
+.plc-desc{font-size:11.5px;color:var(--muted);margin-top:2px}
+.plc-rows{display:flex;flex-direction:column;gap:7px}
+.plc-row{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)}
+.plc-row-lbl{font-size:13px;color:rgba(255,255,255,.72);font-weight:500}
+.plc-row-price{font-size:15px;font-weight:900;color:#fff}
+.plc-section-div{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:8px 2px 3px}
+.plc-row.bulk .plc-row-lbl::before{content:'⚡ '}
+.plc-row.bulk .plc-row-price{color:var(--green)}
+
+/* ── ADMIN OVERLAY ── */
+#admin-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.65);backdrop-filter:blur(18px)}
+#admin-overlay.open{display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:30px 14px 60px}
+.admin-wrap{width:100%;max-width:700px;position:relative;animation:fadeUp .4s var(--spring)}
+.admin-close{position:absolute;top:-8px;right:0;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;z-index:1}
+.admin-close:hover{background:rgba(255,80,80,.28)}
+.acard{border-radius:var(--radius);padding:26px;margin-bottom:16px}
+.attl{font-size:15px;font-weight:900;color:#fff;margin-bottom:18px}
+.iform{display:flex;flex-direction:column;gap:12px}
+.irow{display:grid;gap:10px}
+.irow2{grid-template-columns:1fr 1fr}
+.irow3{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:500px){.irow2,.irow3{grid-template-columns:1fr}}
+.igroup label{display:block;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.gi{width:100%;padding:11px 14px;border-radius:var(--rsm);background:rgba(255,255,255,.09);border:1.5px solid rgba(255,255,255,.12);color:#fff;font-family:'Nunito',sans-serif;font-size:13.5px;font-weight:700;outline:none;transition:.2s var(--ease)}
+.gi:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,107,53,.14);background:rgba(255,255,255,.13)}
+.gi::placeholder{color:rgba(255,255,255,.28)}
+.btn{padding:12px 26px;border-radius:50px;border:none;font-family:'Nunito',sans-serif;font-size:13.5px;font-weight:800;cursor:pointer;transition:.2s var(--ease);letter-spacing:.4px}
+.btn-acc{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 18px rgba(255,107,53,.32)}
+.btn-acc:hover{transform:translateY(-2px);box-shadow:0 7px 26px rgba(255,107,53,.42)}
+.btn-sm{padding:7px 16px;font-size:12px}
+.btn-del{background:rgba(255,80,80,.12);border:1px solid rgba(255,80,80,.28);color:#ff7b7b;padding:7px 14px;font-size:12px;font-weight:700;border-radius:50px;cursor:pointer;transition:.2s}
+.btn-del:hover{background:rgba(255,80,80,.25)}
+.aitem{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:14px;border-radius:var(--rsm);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);margin-bottom:8px}
+.aitem-name{font-size:14px;font-weight:800;color:#fff;margin-bottom:3px}
+.aitem-sub{font-size:11px;color:var(--muted)}
+.ptags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.ptag{font-size:10.5px;background:rgba(255,107,53,.14);border:1px solid rgba(255,107,53,.22);border-radius:50px;padding:2px 10px;color:var(--accent2);font-weight:700}
+.aitem-btns{display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+.login-box{text-align:center;padding:40px 32px}
+.lock{font-size:46px;margin-bottom:14px;display:block;animation:lockBob 2s ease-in-out infinite}
+@keyframes lockBob{0%,100%{transform:scale(1)}50%{transform:scale(1.1) rotate(-4deg)}}
+.login-box h2{font-size:20px;font-weight:900;margin-bottom:6px}
+.login-box p{font-size:13px;color:var(--muted);margin-bottom:24px}
+.hint{font-size:11px;color:rgba(255,255,255,.18);margin-top:14px}
+.divhr{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);margin:16px 0}
+.empty{text-align:center;padding:26px;color:var(--muted);font-size:13.5px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(90px);padding:11px 22px;border-radius:50px;font-size:13px;font-weight:800;backdrop-filter:blur(20px);z-index:300;transition:transform .4s var(--spring);white-space:nowrap;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{background:rgba(128,203,196,.24);border:1px solid rgba(128,203,196,.38);color:var(--green)}
+.toast.err{background:rgba(255,107,107,.2);border:1px solid rgba(255,107,107,.35);color:#ff8a8a}
+
+/* ── PARTICLES ── */
+.p{position:fixed;border-radius:50%;pointer-events:none;z-index:0;background:rgba(255,255,255,.12);animation:pdrift linear infinite}
+@keyframes pdrift{0%{transform:translate(0,100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:.4}100%{transform:translate(var(--dx),0) scale(1);opacity:0}}
+
+/* ── SECRET TAP ZONE ── */
+.stap{position:fixed;bottom:0;right:0;width:55px;height:55px;z-index:50;cursor:default;-webkit-tap-highlight-color:transparent}
+
+/* ── INVOICE OVERLAY ── */
+#invoice-overlay{display:none;position:fixed;inset:0;z-index:210;background:rgba(0,0,0,.7);backdrop-filter:blur(18px);align-items:center;justify-content:center;padding:16px}
+#invoice-overlay.open{display:flex}
+.inv-wrap{width:100%;max-width:420px;border-radius:24px;overflow:hidden;animation:fadeUp .4s var(--spring)}
+.inv-card{background:#fff;color:#111;padding:28px 26px 22px;position:relative}
+.inv-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.inv-brand{display:flex;align-items:center;gap:10px}
+.inv-logo{font-size:26px}
+.inv-brand-name{font-size:16px;font-weight:900;color:#111}
+.inv-brand-sub{font-size:10px;color:#888;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.inv-close{width:32px;height:32px;border-radius:50%;border:1.5px solid #e0e0e0;background:#f5f5f5;color:#555;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.inv-close:hover{background:#ffe0d6;border-color:#FF6B35;color:#FF6B35}
+.inv-divider{height:1px;background:linear-gradient(90deg,#FF6B35,#FFD166,transparent);margin:0 0 18px}
+.inv-title{font-size:11px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:#FF6B35;margin-bottom:14px}
+.inv-rows{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.inv-row{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;border-radius:10px;background:#f7f7f7}
+.inv-row-lbl{font-size:12.5px;color:#555;font-weight:600}
+.inv-row-val{font-size:13px;font-weight:900;color:#111}
+.inv-total-row{background:linear-gradient(135deg,#fff3ee,#fff8ec);border:1.5px solid #FF6B35;border-radius:12px;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.inv-total-lbl{font-size:12px;font-weight:800;color:#FF6B35;letter-spacing:1px;text-transform:uppercase}
+.inv-total-amt{font-size:26px;font-weight:900;color:#FF6B35;letter-spacing:-1px}
+.inv-bulk-badge{display:inline-flex;align-items:center;gap:5px;background:#e8f8f7;border:1px solid #80CBC4;border-radius:50px;padding:4px 12px;font-size:11px;font-weight:800;color:#3d9e97;margin-bottom:14px}
+.inv-notes-toggle{width:100%;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;color:#555;letter-spacing:.5px;margin-bottom:4px;transition:.2s}
+.inv-notes-toggle:hover{background:#ffe0d6;border-color:#FF6B35;color:#FF6B35}
+.inv-notes-toggle .arr{transition:transform .25s;font-size:10px}
+.inv-notes-toggle.open .arr{transform:rotate(180deg)}
+.inv-notes-body{display:none;background:#fafafa;border:1.5px solid #e8e8e8;border-radius:10px;padding:10px 14px;margin-bottom:12px}
+.inv-notes-body.open{display:block}
+.inv-notes-body li{font-size:11.5px;color:#666;padding:3px 0;display:flex;gap:7px;list-style:none}
+.inv-notes-body li::before{content:"›";color:#FF6B35;font-weight:900;flex-shrink:0}
+.inv-footer{font-size:10px;color:#bbb;text-align:center;margin-top:6px;letter-spacing:.5px}
+.inv-screenshot-hint{background:linear-gradient(135deg,#14103c,#0d0a22);color:rgba(255,255,255,.7);border-radius:0 0 24px 24px;padding:10px 18px;font-size:11px;font-weight:700;text-align:center;letter-spacing:.5px}
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge">
+      <span class="badge-icon">🖨️</span>
+      <span class="badge-text">Snickers Printing</span>
+    </div>
+    <h1>Print <span>Price</span><br>Calculator</h1>
+    <p class="subtitle">Instant transparent pricing — no surprises</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('calc',this)">🧮 Calculator</button>
+    <button class="tab" onclick="showTab('prices',this)">💰 Price List</button>
+  </div>
+
+  <!-- ══ CALCULATOR ══ -->
+  <div id="page-calc" class="page active">
+
+    <div class="ccard glass">
+
+      <!-- Step 1: Print Type cards (B&W, Color, etc.) -->
+      <div class="slabel">Print Type</div>
+      <div class="type-grid" id="type-grid"></div>
+
+      <!-- Step 2: Single / Double side ONLY -->
+      <div class="slabel">Sides</div>
+      <div class="side-pills">
+        <button class="pill active" id="pill-single" onclick="setSide('single')">⬜ Single Side</button>
+        <button class="pill"        id="pill-double" onclick="setSide('double')">▣ Double Side</button>
+      </div>
+      <div class="double-note" id="double-note">⚠️ Double-side not available for this print type</div>
+
+      <!-- Step 3: Pages -->
+      <div class="slabel" style="margin-top:22px">Number of Pages</div>
+      <div class="pcounter">
+        <button class="cbtn" onclick="changePg(-1)">−</button>
+        <input class="cinput" type="number" id="pg" value="1" min="1" max="9999" onchange="clampCalc()">
+        <button class="cbtn" onclick="changePg(1)">+</button>
+      </div>
+      <button class="btn btn-acc" style="width:100%;margin-top:14px;font-size:15px;padding:14px" onclick="calc()">🧮 Calculate</button>
+
+    </div>
+
+    <!-- Result -->
+    <div class="result">
+      <div class="result-lbl">Estimated Total</div>
+      <div class="result-price" id="rprice">₹0</div>
+      <div class="breakdown" id="breakdown"></div>
+    </div>
+
+    <!-- Finalize -->
+    <button class="btn btn-acc" style="width:100%;margin-top:4px;font-size:15px;padding:15px;background:linear-gradient(135deg,#4FC3F7,#7986CB);box-shadow:0 4px 20px rgba(79,195,247,.35)" onclick="openInvoice()">📋 Finalize Order</button>
+
+    <!-- Notes -->
+    <div class="notice glass">
+      <div class="notice-ttl">📌 Important Notes</div>
+      <ul id="notice-list"></ul>
+    </div>
+
+  </div>
+
+  <!-- ══ PRICE LIST ══ -->
+  <div id="page-prices" class="page">
+    <div id="price-list"></div>
+  </div>
+
+</div>
+
+<!-- ══ INVOICE OVERLAY ══ -->
+<div id="invoice-overlay" onclick="if(event.target===this)closeInvoice()">
+  <div class="inv-wrap">
+    <div class="inv-card">
+      <div class="inv-header">
+        <div class="inv-brand">
+          <span class="inv-logo">🖨️</span>
+          <div>
+            <div class="inv-brand-name">Snickers Printing</div>
+            <div class="inv-brand-sub">Order Summary</div>
+          </div>
+        </div>
+        <button class="inv-close" onclick="closeInvoice()">✕</button>
+      </div>
+      <div class="inv-divider"></div>
+      <div id="inv-verified-banner" style="display:none;background:#e8f8f7;border:1.5px solid #80CBC4;border-radius:10px;padding:9px 14px;margin-bottom:14px;font-size:12px;font-weight:800;color:#3d9e97;display:none;align-items:center;gap:8px">✅ Verified Order — details cannot be altered</div>
+      <div class="inv-title">📋 Your Order</div>
+      <div class="inv-rows" id="inv-rows"></div>
+      <div id="inv-bulk-badge" style="display:none" class="inv-bulk-badge">⚡ Bulk Discount Applied</div>
+      <div class="inv-total-row">
+        <span class="inv-total-lbl">Total</span>
+        <span class="inv-total-amt" id="inv-total">₹0</span>
+      </div>
+      <button class="inv-notes-toggle" id="inv-notes-toggle" onclick="toggleInvNotes()">
+        📌 Important Notes <span class="arr">▼</span>
+      </button>
+      <ul class="inv-notes-body" id="inv-notes-body"></ul>
+      <div class="inv-footer" id="inv-footer"></div>
+    </div>
+    <div class="inv-actions" style="display:flex;gap:10px;padding:12px 16px;background:linear-gradient(135deg,#14103c,#0a1128)">
+      <button onclick="shareOrder()" style="flex:1;padding:11px;border-radius:50px;border:none;background:linear-gradient(135deg,#FF6B35,#FF9A3C);color:#fff;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px">🔗 Copy Share Link</button>
+    </div>
+    <div class="inv-screenshot-hint">📎 Share this link along with your file to place your order</div>
+  </div>
+</div>
+
+<!-- ══ ADMIN OVERLAY (hidden, secret access) ══ -->
+<div id="admin-overlay">
+  <div class="admin-wrap">
+    <button class="admin-close" onclick="closeAdmin()">✕</button>
+
+    <!-- Login -->
+    <div id="al-login" class="acard glass login-box">
+      <span class="lock">🔐</span>
+      <h2>Admin Panel</h2>
+      <p>Enter password to manage pricing</p>
+      <div style="margin-bottom:10px">
+        <input class="gi" type="password" id="apass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn btn-acc" style="width:100%" onclick="doLogin()">Unlock</button>
+      <div class="hint">Default: admin123</div>
+    </div>
+
+    <!-- Panel (shown after login) -->
+    <div id="al-panel" style="display:none">
+
+      <!-- Manage existing types -->
+      <div class="acard glass">
+        <div class="attl">📋 Print Types</div>
+        <div id="a-types"></div>
+      </div>
+
+      <!-- Add new type -->
+      <div class="acard glass">
+        <div class="attl">➕ Add Print Type</div>
+        <div class="iform">
+          <div class="irow irow3">
+            <div class="igroup"><label>Name</label><input class="gi" id="n-name" placeholder="e.g. Premium"></div>
+            <div class="igroup"><label>Icon</label><input class="gi" id="n-icon" placeholder="🖨️" maxlength="4"></div>
+            <div class="igroup"><label>Description</label><input class="gi" id="n-desc" placeholder="Short desc"></div>
+          </div>
+          <div class="slabel" style="margin:4px 0 2px">B&W Pricing (₹) — leave blank if not offered</div>
+          <div class="irow irow2">
+            <div class="igroup"><label>Single / side</label><input class="gi" type="number" id="n-bw-s" placeholder="3" step="0.5"></div>
+            <div class="igroup"><label>Bulk / side (30+)</label><input class="gi" type="number" id="n-bw-bs" placeholder="2" step="0.5"></div>
+          </div>
+          <div class="slabel" style="margin:4px 0 2px">Color Pricing (₹) — leave blank if not offered</div>
+          <div class="irow irow2">
+            <div class="igroup"><label>Single / side</label><input class="gi" type="number" id="n-c-s" placeholder="5" step="0.5"></div>
+            <div class="igroup"><label>Bulk / side (30+)</label><input class="gi" type="number" id="n-c-bs" placeholder="4" step="0.5"></div>
+          </div>
+          <div class="irow irow2">
+            <div class="igroup">
+              <label>Supports double-side?</label>
+              <div class="side-pills" style="margin-top:2px">
+                <button class="pill active" id="n-d-y" onclick="setND(true)"  style="padding:9px 8px;font-size:12px">Yes</button>
+                <button class="pill"        id="n-d-n" onclick="setND(false)" style="padding:9px 8px;font-size:12px">No</button>
+              </div>
+            </div>
+            <div class="igroup"><label>Bulk threshold (pages)</label><input class="gi" type="number" id="n-thr" placeholder="30" value="30"></div>
+          </div>
+          <div style="display:flex;justify-content:flex-end">
+            <button class="btn btn-acc" onclick="addType()">Add Type ✨</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="acard glass">
+        <div class="attl">📌 Important Notes</div>
+        <div id="a-notes"></div>
+        <div class="divhr"></div>
+        <div style="display:flex;gap:8px">
+          <input class="gi" id="n-note" placeholder="Add a note..." style="flex:1">
+          <button class="btn btn-acc btn-sm" onclick="addNote()">Add</button>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:8px">
+        <button class="btn-del" onclick="doLogout()" style="padding:10px 26px">🔒 Lock Admin</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Secret tap zone: bottom-right corner, tap 5× quickly -->
+<div class="stap" onclick="secretTap()"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ─── DATA ─── */
+const DEF = {
+  printTypes:[
+    {id:'bw',   name:'Black & White', icon:'⬛', desc:'Standard laser B&W printing',   supportsDouble:true,  bulkThreshold:30, bw:{single:3,double:2.5,bulkSingle:2,bulkDouble:2}, col:{single:null,double:null,bulkSingle:null,bulkDouble:null}},
+    {id:'color',name:'Color',         icon:'🌈', desc:'Full-color vibrant printing',    supportsDouble:true,  bulkThreshold:30, bw:{single:null,double:null,bulkSingle:null,bulkDouble:null}, col:{single:5,double:5,bulkSingle:4,bulkDouble:4}}
+  ],
+  notes:['Exact file must be provided before printing','Specify color or black & white when ordering','Specify single-side or double-side printing','Thick or high-ink images cannot be printed double-sided']
+};
+
+let D = JSON.parse(localStorage.getItem('snk3')||'null') || JSON.parse(JSON.stringify(DEF));
+const save = ()=>localStorage.setItem('snk3',JSON.stringify(D));
+
+/* ─── STATE ─── */
+let S = {typeId:D.printTypes[0]?.id, side:'single', pages:1};
+let adminIn=false, _nd=true;
+
+/* ─── PARTICLES ─── */
+for(let i=0;i<16;i++){
+  const p=document.createElement('div');p.className='p';
+  const sz=Math.random()*3+2;
+  p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}vw;animation-duration:${9+Math.random()*13}s;animation-delay:${Math.random()*12}s;--dx:${(Math.random()-.5)*180}px;opacity:${Math.random()*.25+.05}`;
+  document.body.appendChild(p);
+}
+
+/* ─── TABS ─── */
+function showTab(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='prices') renderPriceList();
+}
+
+/* ─── TYPE GRID ─── */
+function renderTypeGrid(){
+  const g=document.getElementById('type-grid');
+  g.innerHTML='';
+  D.printTypes.forEach(t=>{
+    const d=document.createElement('div');
+    d.className='tcard'+(t.id===S.typeId?' sel':'');
+    // build a short hint line from whichever prices exist
+    const hints=[];
+    if(t.bw.single!==null)  hints.push(`B&W from ₹${t.bw.single}/side`);
+    if(t.col.single!==null) hints.push(`Color from ₹${t.col.single}/side`);
+    d.innerHTML=`<span class="tcard-icon">${t.icon}</span><div class="tcard-name">${t.name}</div><div class="tcard-hint">${hints.join(' · ')||'Custom pricing'}</div>`;
+    d.onclick=()=>{S.typeId=t.id; checkDouble(); renderTypeGrid(); calc();};
+    g.appendChild(d);
+  });
+}
+
+/* ─── SIDE ─── */
+function setSide(s){
+  const t=getType();
+  if(s==='double'&&t&&!t.supportsDouble){
+    document.getElementById('double-note').style.display='block'; return;
+  }
+  document.getElementById('double-note').style.display='none';
+  S.side=s;
+  document.getElementById('pill-single').classList.toggle('active',s==='single');
+  document.getElementById('pill-double').classList.toggle('active',s==='double');
+  calc();
+}
+function checkDouble(){
+  const t=getType();
+  if(S.side==='double'&&t&&!t.supportsDouble){
+    S.side='single';
+    document.getElementById('pill-single').classList.add('active');
+    document.getElementById('pill-double').classList.remove('active');
+    document.getElementById('double-note').style.display='block';
+  } else document.getElementById('double-note').style.display='none';
+}
+
+/* ─── PAGES ─── */
+function changePg(d){
+  let v=(parseInt(document.getElementById('pg').value)||1)+d;
+  if(v<1)v=1;
+  document.getElementById('pg').value=v; S.pages=v; calc();
+}
+function clampCalc(){
+  let v=parseInt(document.getElementById('pg').value)||1;
+  if(v<1)v=1;
+  document.getElementById('pg').value=v; S.pages=v; calc();
+}
+const getType=()=>D.printTypes.find(t=>t.id===S.typeId);
+const nv=v=>(v===''||v===null||v===undefined||isNaN(parseFloat(v)))?null:parseFloat(v);
+
+/* ─── CALCULATE ─── */
+function calc(){
+  S.pages=Math.max(1,parseInt(document.getElementById('pg').value)||1);
+  const t=getType();
+  const rp=document.getElementById('rprice');
+  const bd=document.getElementById('breakdown');
+  bd.innerHTML='';
+
+  if(!t){rp.textContent='₹0';return;}
+
+  // Determine which price block to use
+  const prices = t.bw.single!==null ? t.bw : t.col;
+  const modeName = t.bw.single!==null ? 'B&W' : 'Color';
+
+  if(!prices||prices.single===null){
+    rp.textContent='N/A';
+    chip(bd,'No pricing set','na-chip'); return;
+  }
+
+  const isDouble=S.side==='double';
+  const thr=t.bulkThreshold||30;
+  const sides=S.pages;
+  const isBulk=sides>thr;
+
+  // Pick the right rate: double has its own rate per side
+  let rate, bulkApplied=false;
+  if(isDouble){
+    const dRate=isBulk&&prices.bulkDouble!==null ? prices.bulkDouble : prices.double;
+    if(dRate===null||dRate===undefined){rp.textContent='N/A';chip(bd,'Double-side not priced','na-chip');return;}
+    rate=dRate;
+    if(isBulk&&prices.bulkDouble!==null) bulkApplied=true;
+  } else {
+    if(isBulk&&prices.bulkSingle!==null){rate=prices.bulkSingle;bulkApplied=true;}
+    else{rate=prices.single;}
+  }
+
+  const total=rate*sides;
+  rp.className='result-price';void rp.offsetWidth;rp.className='result-price pop';
+  rp.textContent='₹'+total.toLocaleString('en-IN',{minimumFractionDigits:total%1?2:0});
+
+  chip(bd,`₹${rate}/side × ${sides} page${sides!==1?'s':''}${isDouble?' (double-sided)':''}${bulkApplied?' · bulk':''}`, 'chip');
+  if(bulkApplied) chip(bd,`⚡ Bulk discount applied (>${thr} pages)`,'chip bulk-chip');
+
+  if(!bulkApplied){
+    const bulkRate=isDouble?prices.bulkDouble:prices.bulkSingle;
+    if(bulkRate!==null&&bulkRate!==undefined) chip(bd,`Bulk rate (>${thr} pages): ₹${bulkRate}/side`,'chip info-chip');
+  } else {
+    const normRate=isDouble?prices.double:prices.single;
+    if(normRate!==null&&normRate!==undefined) chip(bd,`Normal rate: ₹${normRate}/side`,'chip info-chip');
+  }
+}
+function chip(parent,text,cls){
+  const c=document.createElement('div');c.className=cls;c.textContent=text;parent.appendChild(c);
+}
+
+/* ─── NOTES ─── */
+function renderNotes(){
+  document.getElementById('notice-list').innerHTML=D.notes.map(n=>`<li>${n}</li>`).join('');
+}
+
+/* ─── PRICE LIST ─── */
+function renderPriceList(){
+  const el=document.getElementById('price-list');el.innerHTML='';
+  const gd=['linear-gradient(135deg,rgba(255,107,53,.17),rgba(255,107,53,.06))','linear-gradient(135deg,rgba(79,195,247,.15),rgba(79,195,247,.05))','linear-gradient(135deg,rgba(206,147,216,.14),rgba(206,147,216,.05))','linear-gradient(135deg,rgba(128,203,196,.14),rgba(128,203,196,.05))'];
+  D.printTypes.forEach((t,i)=>{
+    const c=document.createElement('div');c.className='plist-card glass';c.style.background=gd[i%gd.length];
+    const thr=t.bulkThreshold||30;
+    let rows='';
+    if(t.bw.single!==null){
+      rows+=`<div class="plc-section-div">⬛ Black &amp; White</div>`;
+      rows+=pr('Single side',`₹${t.bw.single}/side`);
+      if(t.bw.double!==null) rows+=pr('Double side',`₹${t.bw.double}/side`);
+      if(t.bw.bulkSingle!==null) rows+=pr(`Bulk single (${thr}+ pages)`,`₹${t.bw.bulkSingle}/side`,true);
+      if(t.bw.bulkDouble!==null) rows+=pr(`Bulk double (${thr}+ pages)`,`₹${t.bw.bulkDouble}/side`,true);
+    }
+    if(t.col.single!==null){
+      rows+=`<div class="plc-section-div">🌈 Color</div>`;
+      rows+=pr('Single side',`₹${t.col.single}/side`);
+      if(t.col.double!==null) rows+=pr('Double side',`₹${t.col.double}/side`);
+      if(t.col.bulkSingle!==null) rows+=pr(`Bulk single (${thr}+ pages)`,`₹${t.col.bulkSingle}/side`,true);
+      if(t.col.bulkDouble!==null) rows+=pr(`Bulk double (${thr}+ pages)`,`₹${t.col.bulkDouble}/side`,true);
+    }
+    c.innerHTML=`<div class="plc-head"><span class="plc-icon">${t.icon}</span><div><div class="plc-name">${t.name}</div><div class="plc-desc">${t.desc||''}</div></div></div><div class="plc-rows">${rows}</div>`;
+    el.appendChild(c);
+  });
+  if(D.notes.length){const nc=document.createElement('div');nc.className='notice glass';nc.style.marginTop='10px';nc.innerHTML=`<div class="notice-ttl">📌 Important Notes</div><ul>${D.notes.map(n=>`<li>${n}</li>`).join('')}</ul>`;el.appendChild(nc);}
+}
+const pr=(l,p,bulk=false)=>`<div class="plc-row${bulk?' bulk':''}"><span class="plc-row-lbl">${l}</span><span class="plc-row-price">${p}</span></div>`;
+
+/* ─── INVOICE ─── */
+function openInvoice(){
+  const t=getType();
+  if(!t){toast('Calculate first','err');return;}
+
+  const prices=t.bw.single!==null?t.bw:t.col;
+  const modeName=t.bw.single!==null?'Black & White':'Color';
+  const isDouble=S.side==='double';
+  const thr=t.bulkThreshold||30;
+  const sides=S.pages;
+  const isBulk=sides>thr;
+
+  let rate,bulkApplied=false;
+  if(isDouble){
+    const dRate=isBulk&&prices.bulkDouble!==null?prices.bulkDouble:prices.double;
+    if(dRate===null||dRate===undefined){toast('Double-side not priced','err');return;}
+    rate=dRate;
+    if(isBulk&&prices.bulkDouble!==null)bulkApplied=true;
+  } else {
+    if(isBulk&&prices.bulkSingle!==null){rate=prices.bulkSingle;bulkApplied=true;}
+    else{rate=prices.single;}
+  }
+
+  const total=rate*sides;
+  const totalFmt='₹'+total.toLocaleString('en-IN',{minimumFractionDigits:total%1?2:0});
+  const unitLabel=isDouble?'Double-Side':'Single-Side';
+
+  // Build rows
+  const rows=[
+    {l:'Print Type',v:`${t.icon} ${t.name}`},
+    {l:'Mode',v:modeName},
+    {l:'Sides',v:unitLabel},
+    {l:'Pages',v:S.pages+' page'+(S.pages!==1?'s':'')},
+    {l:'Rate',v:`₹${rate}/side${bulkApplied?' (bulk)':''}`},
+  ];
+  const rb=document.getElementById('inv-rows');
+  rb.innerHTML=rows.map(r=>`<div class="inv-row"><span class="inv-row-lbl">${r.l}</span><span class="inv-row-val">${r.v}</span></div>`).join('');
+
+  document.getElementById('inv-total').textContent=totalFmt;
+  document.getElementById('inv-bulk-badge').style.display=bulkApplied?'inline-flex':'none';
+
+  // Notes dropdown
+  const nb=document.getElementById('inv-notes-body');
+  nb.innerHTML=D.notes.map(n=>`<li>${n}</li>`).join('');
+  nb.classList.remove('open');
+  document.getElementById('inv-notes-toggle').classList.remove('open');
+
+  // Footer timestamp
+  const now=new Date();
+  document.getElementById('inv-footer').textContent=now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})+' · '+now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+
+  document.getElementById('invoice-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeInvoice(){document.getElementById('invoice-overlay').classList.remove('open');document.body.style.overflow='';}
+function toggleInvNotes(){
+  const b=document.getElementById('inv-notes-body');
+  const t=document.getElementById('inv-notes-toggle');
+  b.classList.toggle('open');
+  t.classList.toggle('open');
+}
+
+/* ─── SECRET ADMIN TAP ─── */
+let tapN=0,tapT=null;
+function secretTap(){
+  tapN++;clearTimeout(tapT);
+  tapT=setTimeout(()=>tapN=0,2000);
+  if(tapN>=5){tapN=0;openAdmin();}
+}
+function openAdmin(){document.getElementById('admin-overlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeAdmin(){document.getElementById('admin-overlay').classList.remove('open');document.body.style.overflow='';}
+
+/* ─── LOGIN ─── */
+const PASS='admin123';
+function doLogin(){
+  if(document.getElementById('apass').value===PASS){
+    adminIn=true;
+    document.getElementById('al-login').style.display='none';
+    document.getElementById('al-panel').style.display='block';
+    renderAdmin();toast('Unlocked ✓','ok');
+  } else {
+    toast('Wrong password','err');
+    const e=document.getElementById('apass');e.style.animation='none';void e.offsetWidth;e.style.animation='shake .4s ease';
+  }
+}
+function doLogout(){adminIn=false;document.getElementById('al-panel').style.display='none';document.getElementById('al-login').style.display='block';document.getElementById('apass').value='';}
+
+/* ─── ADMIN RENDER ─── */
+function renderAdmin(){
+  if(!adminIn)return;
+  const tl=document.getElementById('a-types');tl.innerHTML='';
+  if(!D.printTypes.length)tl.innerHTML='<div class="empty">No types yet</div>';
+  else D.printTypes.forEach((t,i)=>{
+    const d=document.createElement('div');d.className='aitem';
+    const tags=[];
+    if(t.bw.single!==null)  tags.push(`B&W ₹${t.bw.single}/side`);
+    if(t.bw.bulkSingle!==null) tags.push(`B&W Bulk ₹${t.bw.bulkSingle}/side`);
+    if(t.col.single!==null) tags.push(`Color ₹${t.col.single}/side`);
+    if(t.col.bulkSingle!==null) tags.push(`Color Bulk ₹${t.col.bulkSingle}/side`);
+    d.innerHTML=`<div><div class="aitem-name">${t.icon} ${t.name}</div><div class="aitem-sub">${t.desc||''} · Double: ${t.supportsDouble?'Yes':'No'}</div><div class="ptags">${tags.map(g=>`<span class="ptag">${g}</span>`).join('')}</div></div><div class="aitem-btns"><button class="btn btn-acc btn-sm" onclick="editType(${i})">Edit</button><button class="btn-del" onclick="delType(${i})">Delete</button></div>`;
+    tl.appendChild(d);
+  });
+  const nl=document.getElementById('a-notes');nl.innerHTML='';
+  D.notes.forEach((n,i)=>{
+    const d=document.createElement('div');d.className='aitem';
+    d.innerHTML=`<div style="font-size:13px;color:rgba(255,255,255,.8);flex:1">${n}</div><button class="btn-del" onclick="delNote(${i})">✕</button>`;
+    nl.appendChild(d);
+  });
+}
+
+function delType(i){if(!confirm(`Delete "${D.printTypes[i].name}"?`))return;D.printTypes.splice(i,1);if(!D.printTypes.find(t=>t.id===S.typeId))S.typeId=D.printTypes[0]?.id;save();renderAdmin();renderTypeGrid();calc();toast('Deleted','ok');}
+
+function editType(i){
+  const t=D.printTypes[i];
+  const nm=prompt('Name:',t.name);if(nm===null)return;
+  const ic=prompt('Icon:',t.icon);if(ic===null)return;
+  const ds=prompt('Desc:',t.desc);if(ds===null)return;
+  const bws=prompt('B&W Single/side (blank=N/A):',t.bw.single??'');
+  const bwbs=prompt('B&W Bulk/side (blank=N/A):',t.bw.bulkSingle??'');
+  const cs=prompt('Color Single/side (blank=N/A):',t.col.single??'');
+  const cbs=prompt('Color Bulk/side (blank=N/A):',t.col.bulkSingle??'');
+  const thr=prompt('Bulk threshold (sides):',t.bulkThreshold||30);
+  t.name=nm||t.name;t.icon=ic||t.icon;t.desc=ds;
+  t.bw={single:nv(bws),bulkSingle:nv(bwbs)};
+  t.col={single:nv(cs),bulkSingle:nv(cbs)};
+  t.bulkThreshold=parseInt(thr)||30;
+  t.supportsDouble=true;
+  save();renderAdmin();renderTypeGrid();calc();toast('Updated ✓','ok');
+}
+
+function setND(v){_nd=v;document.getElementById('n-d-y').classList.toggle('active',v);document.getElementById('n-d-n').classList.toggle('active',!v);}
+
+function addType(){
+  const nm=document.getElementById('n-name').value.trim();
+  if(!nm)return toast('Name required','err');
+  D.printTypes.push({
+    id:'t'+Date.now(),
+    name:nm,
+    icon:document.getElementById('n-icon').value.trim()||'🖨️',
+    desc:document.getElementById('n-desc').value.trim(),
+    supportsDouble:_nd,
+    bulkThreshold:parseInt(document.getElementById('n-thr').value)||30,
+    bw:{single:nv(document.getElementById('n-bw-s').value),bulkSingle:nv(document.getElementById('n-bw-bs').value)},
+    col:{single:nv(document.getElementById('n-c-s').value),bulkSingle:nv(document.getElementById('n-c-bs').value)}
+  });
+  save();renderAdmin();renderTypeGrid();
+  ['n-name','n-icon','n-desc','n-bw-s','n-bw-bs','n-c-s','n-c-bs'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('n-thr').value='30';
+  toast(`"${nm}" added ✓`,'ok');
+}
+
+function addNote(){const v=document.getElementById('n-note').value.trim();if(!v)return toast('Enter a note','err');D.notes.push(v);document.getElementById('n-note').value='';save();renderAdmin();renderNotes();toast('Note added','ok');}
+function delNote(i){D.notes.splice(i,1);save();renderAdmin();renderNotes();toast('Deleted','ok');}
+
+/* ─── TOAST ─── */
+function toast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type;void t.offsetWidth;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
+
+/* ─── SHAKE KEYFRAME ─── */
+const ss=document.createElement('style');
+ss.textContent='@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}';
+document.head.appendChild(ss);
+
+/* ─── CRYPTO ─── */
+const SECRET = 'snickers-print-2025-xK9#mP';
+
+async function getKey(){
+  const enc = new TextEncoder();
+  const keyMat = await crypto.subtle.importKey('raw', enc.encode(SECRET), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    {name:'PBKDF2', salt:enc.encode('snk-salt'), iterations:100000, hash:'SHA-256'},
+    keyMat, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']
+  );
+}
+
+async function encryptOrder(payload){
+  const key = await getKey();
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const enc = new TextEncoder();
+  const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, enc.encode(JSON.stringify(payload)));
+  const combined = new Uint8Array(iv.byteLength + ct.byteLength);
+  combined.set(iv, 0);
+  combined.set(new Uint8Array(ct), iv.byteLength);
+  return btoa(String.fromCharCode(...combined)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+
+async function decryptOrder(token){
+  const key = await getKey();
+  const bin = atob(token.replace(/-/g,'+').replace(/_/g,'/'));
+  const bytes = Uint8Array.from(bin, c=>c.charCodeAt(0));
+  const iv = bytes.slice(0,12);
+  const ct = bytes.slice(12);
+  const pt = await crypto.subtle.decrypt({name:'AES-GCM', iv}, key, ct);
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+
+async function shareOrder(){
+  const t=getType();
+  if(!t){toast('Calculate first','err');return;}
+  const prices=t.bw.single!==null?t.bw:t.col;
+  const isDouble=S.side==='double';
+  const thr=t.bulkThreshold||30;
+  const sides=S.pages;
+  const isBulk=sides>thr;
+  let rate,bulkApplied=false;
+  if(isDouble){
+    const dRate=isBulk&&prices.bulkDouble!==null?prices.bulkDouble:prices.double;
+    if(dRate===null||dRate===undefined){toast('Double-side not priced','err');return;}
+    rate=dRate; if(isBulk&&prices.bulkDouble!==null)bulkApplied=true;
+  } else {
+    if(isBulk&&prices.bulkSingle!==null){rate=prices.bulkSingle;bulkApplied=true;}
+    else{rate=prices.single;}
+  }
+  const total=rate*sides;
+  const payload={
+    typeName:t.name, typeIcon:t.icon,
+    modeName:t.bw.single!==null?'Black & White':'Color',
+    side:isDouble?'Double-Side':'Single-Side',
+    pages:S.pages, rate, total, bulkApplied,
+    ts:Date.now()
+  };
+  try{
+    const token = await encryptOrder(payload);
+    const url = location.origin+location.pathname+'?o='+token;
+    await navigator.clipboard.writeText(url);
+    toast('Link copied! ✓','ok');
+  } catch(e){
+    toast('Copy failed','err');
+  }
+}
+
+async function checkSharedOrder(){
+  const params = new URLSearchParams(location.search);
+  const token = params.get('o');
+  if(!token) return;
+  try{
+    const p = await decryptOrder(token);
+    // Show invoice directly with verified data
+    const rows=[
+      {l:'Print Type',v:`${p.typeIcon} ${p.typeName}`},
+      {l:'Mode',v:p.modeName},
+      {l:'Sides',v:p.side},
+      {l:'Pages',v:p.pages+' page'+(p.pages!==1?'s':'')},
+      {l:'Rate',v:`₹${p.rate}/side${p.bulkApplied?' (bulk)':''}`},
+    ];
+    document.getElementById('inv-rows').innerHTML=rows.map(r=>`<div class="inv-row"><span class="inv-row-lbl">${r.l}</span><span class="inv-row-val">${r.v}</span></div>`).join('');
+    const totalFmt='₹'+p.total.toLocaleString('en-IN',{minimumFractionDigits:p.total%1?2:0});
+    document.getElementById('inv-total').textContent=totalFmt;
+    document.getElementById('inv-bulk-badge').style.display=p.bulkApplied?'inline-flex':'none';
+    const nb=document.getElementById('inv-notes-body');
+    nb.innerHTML=D.notes.map(n=>`<li>${n}</li>`).join('');
+    nb.classList.remove('open');
+    document.getElementById('inv-notes-toggle').classList.remove('open');
+    const d=new Date(p.ts);
+    document.getElementById('inv-footer').textContent=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})+' · '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    const banner=document.getElementById('inv-verified-banner');
+    banner.style.display='flex';
+    document.getElementById('invoice-overlay').classList.add('open');
+    document.body.style.overflow='hidden';
+  } catch(e){
+    toast('Invalid or tampered link','err');
+  }
+}
+
+/* ─── INIT ─── */
+renderTypeGrid();
+renderNotes();
+calc();
+checkSharedOrder();
+</script>
+</body>
+</html>
