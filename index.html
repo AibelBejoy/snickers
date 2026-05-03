@@ -624,7 +624,7 @@ function openInvoice(){
   // Build rows
   const rows=[
     {l:'Print Type',v:`${t.icon} ${t.name}`},
-    {l:'Mode',v:modeName},
+    
     {l:'Sides',v:unitLabel},
     {l:'Pages',v:S.pages+' page'+(S.pages!==1?'s':'')},
     {l:'Rate',v:`₹${rate}/side${bulkApplied?' (bulk)':''}`},
@@ -833,7 +833,7 @@ async function checkSharedOrder(){
     // Show invoice directly with verified data
     const rows=[
       {l:'Print Type',v:`${p.typeIcon} ${p.typeName}`},
-      {l:'Mode',v:p.modeName},
+      
       {l:'Sides',v:p.side},
       {l:'Pages',v:p.pages+' page'+(p.pages!==1?'s':'')},
       {l:'Rate',v:`₹${p.rate}/side${p.bulkApplied?' (bulk)':''}`},
