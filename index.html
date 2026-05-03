@@ -185,7 +185,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 @keyframes pdrift{0%{transform:translate(0,100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:.4}100%{transform:translate(var(--dx),0) scale(1);opacity:0}}
 
 /* ── SECRET TAP ZONE ── */
-.stap{position:fixed;bottom:0;right:0;width:55px;height:55px;z-index:50;cursor:default;-webkit-tap-highlight-color:transparent}
+.stap{position:fixed;bottom:0;right:0;width:80px;height:80px;z-index:50;cursor:default;-webkit-tap-highlight-color:transparent}
 
 /* ── INVOICE OVERLAY ── */
 #invoice-overlay{display:none;position:fixed;inset:0;z-index:210;background:rgba(0,0,0,.7);backdrop-filter:blur(18px);align-items:center;justify-content:center;padding:16px}
@@ -347,49 +347,38 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
         <input class="gi" type="password" id="apass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
       </div>
       <button class="btn btn-acc" style="width:100%" onclick="doLogin()">Unlock</button>
-      <div class="hint">Default: admin123</div>
+      
     </div>
 
     <!-- Panel (shown after login) -->
     <div id="al-panel" style="display:none">
 
-      <!-- Manage existing types -->
+      <!-- B&W Prices -->
       <div class="acard glass">
-        <div class="attl">📋 Print Types</div>
-        <div id="a-types"></div>
+        <div class="attl">⬛ Black &amp; White Pricing (₹/side)</div>
+        <div class="iform">
+          <div class="irow irow2">
+            <div class="igroup"><label>Single — Normal</label><input class="gi" type="number" id="e-bw-s" step="0.5"></div>
+            <div class="igroup"><label>Single — Bulk (30+ pages)</label><input class="gi" type="number" id="e-bw-bs" step="0.5"></div>
+          </div>
+          <div class="irow irow2">
+            <div class="igroup"><label>Double — Normal</label><input class="gi" type="number" id="e-bw-d" step="0.5"></div>
+            <div class="igroup"><label>Double — Bulk (30+ pages)</label><input class="gi" type="number" id="e-bw-bd" step="0.5"></div>
+          </div>
+        </div>
       </div>
 
-      <!-- Add new type -->
+      <!-- Color Prices -->
       <div class="acard glass">
-        <div class="attl">➕ Add Print Type</div>
+        <div class="attl">🌈 Color Pricing (₹/side)</div>
         <div class="iform">
-          <div class="irow irow3">
-            <div class="igroup"><label>Name</label><input class="gi" id="n-name" placeholder="e.g. Premium"></div>
-            <div class="igroup"><label>Icon</label><input class="gi" id="n-icon" placeholder="🖨️" maxlength="4"></div>
-            <div class="igroup"><label>Description</label><input class="gi" id="n-desc" placeholder="Short desc"></div>
-          </div>
-          <div class="slabel" style="margin:4px 0 2px">B&W Pricing (₹) — leave blank if not offered</div>
           <div class="irow irow2">
-            <div class="igroup"><label>Single / side</label><input class="gi" type="number" id="n-bw-s" placeholder="3" step="0.5"></div>
-            <div class="igroup"><label>Bulk / side (30+)</label><input class="gi" type="number" id="n-bw-bs" placeholder="2" step="0.5"></div>
-          </div>
-          <div class="slabel" style="margin:4px 0 2px">Color Pricing (₹) — leave blank if not offered</div>
-          <div class="irow irow2">
-            <div class="igroup"><label>Single / side</label><input class="gi" type="number" id="n-c-s" placeholder="5" step="0.5"></div>
-            <div class="igroup"><label>Bulk / side (30+)</label><input class="gi" type="number" id="n-c-bs" placeholder="4" step="0.5"></div>
+            <div class="igroup"><label>Single — Normal</label><input class="gi" type="number" id="e-c-s" step="0.5"></div>
+            <div class="igroup"><label>Single — Bulk (30+ pages)</label><input class="gi" type="number" id="e-c-bs" step="0.5"></div>
           </div>
           <div class="irow irow2">
-            <div class="igroup">
-              <label>Supports double-side?</label>
-              <div class="side-pills" style="margin-top:2px">
-                <button class="pill active" id="n-d-y" onclick="setND(true)"  style="padding:9px 8px;font-size:12px">Yes</button>
-                <button class="pill"        id="n-d-n" onclick="setND(false)" style="padding:9px 8px;font-size:12px">No</button>
-              </div>
-            </div>
-            <div class="igroup"><label>Bulk threshold (pages)</label><input class="gi" type="number" id="n-thr" placeholder="30" value="30"></div>
-          </div>
-          <div style="display:flex;justify-content:flex-end">
-            <button class="btn btn-acc" onclick="addType()">Add Type ✨</button>
+            <div class="igroup"><label>Double — Normal</label><input class="gi" type="number" id="e-c-d" step="0.5"></div>
+            <div class="igroup"><label>Double — Bulk (30+ pages)</label><input class="gi" type="number" id="e-c-bd" step="0.5"></div>
           </div>
         </div>
       </div>
@@ -405,8 +394,9 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
         </div>
       </div>
 
-      <div style="text-align:center;margin-top:8px">
-        <button class="btn-del" onclick="doLogout()" style="padding:10px 26px">🔒 Lock Admin</button>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:8px">
+        <button class="btn btn-acc" onclick="savePrices()">💾 Save Prices</button>
+        <button class="btn-del" onclick="doLogout()" style="padding:10px 26px">🔒 Lock</button>
       </div>
     </div>
   </div>
@@ -433,7 +423,7 @@ const save = ()=>localStorage.setItem('snk3',JSON.stringify(D));
 
 /* ─── STATE ─── */
 let S = {typeId:D.printTypes[0]?.id, side:'single', pages:1};
-let adminIn=false, _nd=true;
+let adminIn=false;
 
 /* ─── PARTICLES ─── */
 for(let i=0;i<16;i++){
@@ -683,66 +673,45 @@ function doLogout(){adminIn=false;document.getElementById('al-panel').style.disp
 
 /* ─── ADMIN RENDER ─── */
 function renderAdmin(){
-  if(!adminIn)return;
-  const tl=document.getElementById('a-types');tl.innerHTML='';
-  if(!D.printTypes.length)tl.innerHTML='<div class="empty">No types yet</div>';
-  else D.printTypes.forEach((t,i)=>{
-    const d=document.createElement('div');d.className='aitem';
-    const tags=[];
-    if(t.bw.single!==null)  tags.push(`B&W ₹${t.bw.single}/side`);
-    if(t.bw.bulkSingle!==null) tags.push(`B&W Bulk ₹${t.bw.bulkSingle}/side`);
-    if(t.col.single!==null) tags.push(`Color ₹${t.col.single}/side`);
-    if(t.col.bulkSingle!==null) tags.push(`Color Bulk ₹${t.col.bulkSingle}/side`);
-    d.innerHTML=`<div><div class="aitem-name">${t.icon} ${t.name}</div><div class="aitem-sub">${t.desc||''} · Double: ${t.supportsDouble?'Yes':'No'}</div><div class="ptags">${tags.map(g=>`<span class="ptag">${g}</span>`).join('')}</div></div><div class="aitem-btns"><button class="btn btn-acc btn-sm" onclick="editType(${i})">Edit</button><button class="btn-del" onclick="delType(${i})">Delete</button></div>`;
-    tl.appendChild(d);
-  });
-  const nl=document.getElementById('a-notes');nl.innerHTML='';
+  if(!adminIn) return;
+  const bw = D.printTypes.find(t=>t.id==='bw');
+  const col = D.printTypes.find(t=>t.id==='color');
+  if(bw){
+    document.getElementById('e-bw-s').value  = bw.bw.single??'';
+    document.getElementById('e-bw-bs').value = bw.bw.bulkSingle??'';
+    document.getElementById('e-bw-d').value  = bw.bw.double??'';
+    document.getElementById('e-bw-bd').value = bw.bw.bulkDouble??'';
+  }
+  if(col){
+    document.getElementById('e-c-s').value   = col.col.single??'';
+    document.getElementById('e-c-bs').value  = col.col.bulkSingle??'';
+    document.getElementById('e-c-d').value   = col.col.double??'';
+    document.getElementById('e-c-bd').value  = col.col.bulkDouble??'';
+  }
+  const nl=document.getElementById('a-notes'); nl.innerHTML='';
   D.notes.forEach((n,i)=>{
-    const d=document.createElement('div');d.className='aitem';
+    const d=document.createElement('div'); d.className='aitem';
     d.innerHTML=`<div style="font-size:13px;color:rgba(255,255,255,.8);flex:1">${n}</div><button class="btn-del" onclick="delNote(${i})">✕</button>`;
     nl.appendChild(d);
   });
 }
 
-function delType(i){if(!confirm(`Delete "${D.printTypes[i].name}"?`))return;D.printTypes.splice(i,1);if(!D.printTypes.find(t=>t.id===S.typeId))S.typeId=D.printTypes[0]?.id;save();renderAdmin();renderTypeGrid();calc();toast('Deleted','ok');}
-
-function editType(i){
-  const t=D.printTypes[i];
-  const nm=prompt('Name:',t.name);if(nm===null)return;
-  const ic=prompt('Icon:',t.icon);if(ic===null)return;
-  const ds=prompt('Desc:',t.desc);if(ds===null)return;
-  const bws=prompt('B&W Single/side (blank=N/A):',t.bw.single??'');
-  const bwbs=prompt('B&W Bulk/side (blank=N/A):',t.bw.bulkSingle??'');
-  const cs=prompt('Color Single/side (blank=N/A):',t.col.single??'');
-  const cbs=prompt('Color Bulk/side (blank=N/A):',t.col.bulkSingle??'');
-  const thr=prompt('Bulk threshold (sides):',t.bulkThreshold||30);
-  t.name=nm||t.name;t.icon=ic||t.icon;t.desc=ds;
-  t.bw={single:nv(bws),bulkSingle:nv(bwbs)};
-  t.col={single:nv(cs),bulkSingle:nv(cbs)};
-  t.bulkThreshold=parseInt(thr)||30;
-  t.supportsDouble=true;
-  save();renderAdmin();renderTypeGrid();calc();toast('Updated ✓','ok');
-}
-
-function setND(v){_nd=v;document.getElementById('n-d-y').classList.toggle('active',v);document.getElementById('n-d-n').classList.toggle('active',!v);}
-
-function addType(){
-  const nm=document.getElementById('n-name').value.trim();
-  if(!nm)return toast('Name required','err');
-  D.printTypes.push({
-    id:'t'+Date.now(),
-    name:nm,
-    icon:document.getElementById('n-icon').value.trim()||'🖨️',
-    desc:document.getElementById('n-desc').value.trim(),
-    supportsDouble:_nd,
-    bulkThreshold:parseInt(document.getElementById('n-thr').value)||30,
-    bw:{single:nv(document.getElementById('n-bw-s').value),bulkSingle:nv(document.getElementById('n-bw-bs').value)},
-    col:{single:nv(document.getElementById('n-c-s').value),bulkSingle:nv(document.getElementById('n-c-bs').value)}
-  });
-  save();renderAdmin();renderTypeGrid();
-  ['n-name','n-icon','n-desc','n-bw-s','n-bw-bs','n-c-s','n-c-bs'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('n-thr').value='30';
-  toast(`"${nm}" added ✓`,'ok');
+function savePrices(){
+  const bw  = D.printTypes.find(t=>t.id==='bw');
+  const col = D.printTypes.find(t=>t.id==='color');
+  if(bw){
+    bw.bw.single      = nv(document.getElementById('e-bw-s').value);
+    bw.bw.bulkSingle  = nv(document.getElementById('e-bw-bs').value);
+    bw.bw.double      = nv(document.getElementById('e-bw-d').value);
+    bw.bw.bulkDouble  = nv(document.getElementById('e-bw-bd').value);
+  }
+  if(col){
+    col.col.single     = nv(document.getElementById('e-c-s').value);
+    col.col.bulkSingle = nv(document.getElementById('e-c-bs').value);
+    col.col.double     = nv(document.getElementById('e-c-d').value);
+    col.col.bulkDouble = nv(document.getElementById('e-c-bd').value);
+  }
+  save(); renderTypeGrid(); calc(); toast('Prices saved ✓','ok');
 }
 
 function addNote(){const v=document.getElementById('n-note').value.trim();if(!v)return toast('Enter a note','err');D.notes.push(v);document.getElementById('n-note').value='';save();renderAdmin();renderNotes();toast('Note added','ok');}
