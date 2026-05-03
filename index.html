@@ -268,7 +268,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
         <input class="cinput" type="number" id="pg" value="1" min="1" max="9999" onchange="clampCalc()">
         <button class="cbtn" onclick="changePg(1)">+</button>
       </div>
-      <button class="btn btn-acc" style="width:100%;margin-top:14px;font-size:15px;padding:14px" onclick="calc()">🧮 Calculate</button>
+      <button class="btn btn-acc" style="width:100%;margin-top:14px;font-size:15px;padding:14px" onclick="_userCalc=true;calc()">🧮 Calculate</button>
 
     </div>
 
@@ -496,6 +496,7 @@ const getType=()=>D.printTypes.find(t=>t.id===S.typeId);
 const nv=v=>(v===''||v===null||v===undefined||isNaN(parseFloat(v)))?null:parseFloat(v);
 
 /* ─── CALCULATE ─── */
+let _userCalc=false;
 function calc(){
   S.pages=Math.max(1,parseInt(document.getElementById('pg').value)||1);
   const t=getType();
@@ -536,6 +537,7 @@ function calc(){
   rp.textContent='₹'+total.toLocaleString('en-IN',{minimumFractionDigits:total%1?2:0});
 
   chip(bd,`₹${rate}/side × ${sides} page${sides!==1?'s':''}${isDouble?' (double-sided)':''}${bulkApplied?' · bulk':''}`, 'chip');
+  if(_userCalc) document.querySelector('.result').scrollIntoView({behavior:'smooth',block:'start'});
   if(bulkApplied) chip(bd,`⚡ Bulk discount applied (>${thr} pages)`,'chip bulk-chip');
 
   if(!bulkApplied){
