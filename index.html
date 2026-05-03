@@ -136,43 +136,6 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .plc-row.bulk .plc-row-lbl::before{content:'⚡ '}
 .plc-row.bulk .plc-row-price{color:var(--green)}
 
-/* ── ADMIN OVERLAY ── */
-#admin-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.65);backdrop-filter:blur(18px)}
-#admin-overlay.open{display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:30px 14px 60px}
-.admin-wrap{width:100%;max-width:700px;position:relative;animation:fadeUp .4s var(--spring)}
-.admin-close{position:absolute;top:-8px;right:0;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;z-index:1}
-.admin-close:hover{background:rgba(255,80,80,.28)}
-.acard{border-radius:var(--radius);padding:26px;margin-bottom:16px}
-.attl{font-size:15px;font-weight:900;color:#fff;margin-bottom:18px}
-.iform{display:flex;flex-direction:column;gap:12px}
-.irow{display:grid;gap:10px}
-.irow2{grid-template-columns:1fr 1fr}
-.irow3{grid-template-columns:1fr 1fr 1fr}
-@media(max-width:500px){.irow2,.irow3{grid-template-columns:1fr}}
-.igroup label{display:block;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.gi{width:100%;padding:11px 14px;border-radius:var(--rsm);background:rgba(255,255,255,.09);border:1.5px solid rgba(255,255,255,.12);color:#fff;font-family:'Nunito',sans-serif;font-size:13.5px;font-weight:700;outline:none;transition:.2s var(--ease)}
-.gi:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,107,53,.14);background:rgba(255,255,255,.13)}
-.gi::placeholder{color:rgba(255,255,255,.28)}
-.btn{padding:12px 26px;border-radius:50px;border:none;font-family:'Nunito',sans-serif;font-size:13.5px;font-weight:800;cursor:pointer;transition:.2s var(--ease);letter-spacing:.4px}
-.btn-acc{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 18px rgba(255,107,53,.32)}
-.btn-acc:hover{transform:translateY(-2px);box-shadow:0 7px 26px rgba(255,107,53,.42)}
-.btn-sm{padding:7px 16px;font-size:12px}
-.btn-del{background:rgba(255,80,80,.12);border:1px solid rgba(255,80,80,.28);color:#ff7b7b;padding:7px 14px;font-size:12px;font-weight:700;border-radius:50px;cursor:pointer;transition:.2s}
-.btn-del:hover{background:rgba(255,80,80,.25)}
-.aitem{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:14px;border-radius:var(--rsm);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);margin-bottom:8px}
-.aitem-name{font-size:14px;font-weight:800;color:#fff;margin-bottom:3px}
-.aitem-sub{font-size:11px;color:var(--muted)}
-.ptags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
-.ptag{font-size:10.5px;background:rgba(255,107,53,.14);border:1px solid rgba(255,107,53,.22);border-radius:50px;padding:2px 10px;color:var(--accent2);font-weight:700}
-.aitem-btns{display:flex;flex-direction:column;gap:5px;flex-shrink:0}
-.login-box{text-align:center;padding:40px 32px}
-.lock{font-size:46px;margin-bottom:14px;display:block;animation:lockBob 2s ease-in-out infinite}
-@keyframes lockBob{0%,100%{transform:scale(1)}50%{transform:scale(1.1) rotate(-4deg)}}
-.login-box h2{font-size:20px;font-weight:900;margin-bottom:6px}
-.login-box p{font-size:13px;color:var(--muted);margin-bottom:24px}
-.hint{font-size:11px;color:rgba(255,255,255,.18);margin-top:14px}
-.divhr{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);margin:16px 0}
-.empty{text-align:center;padding:26px;color:var(--muted);font-size:13.5px}
 
 /* ── TOAST ── */
 .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(90px);padding:11px 22px;border-radius:50px;font-size:13px;font-weight:800;backdrop-filter:blur(20px);z-index:300;transition:transform .4s var(--spring);white-space:nowrap;pointer-events:none}
@@ -219,6 +182,14 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .inv-notes-body li::before{content:"›";color:#FF6B35;font-weight:900;flex-shrink:0}
 .inv-footer{font-size:10px;color:#bbb;text-align:center;margin-top:6px;letter-spacing:.5px}
 .inv-screenshot-hint{background:linear-gradient(135deg,#14103c,#0d0a22);color:rgba(255,255,255,.7);border-radius:0 0 24px 24px;padding:10px 18px;font-size:11px;font-weight:700;text-align:center;letter-spacing:.5px}
+
+/* ── BUTTONS ── */
+.btn{padding:12px 26px;border-radius:50px;border:none;font-family:'Nunito',sans-serif;font-size:13.5px;font-weight:800;cursor:pointer;transition:.2s var(--ease);letter-spacing:.4px}
+.btn-acc{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 18px rgba(255,107,53,.32)}
+.btn-acc:hover{transform:translateY(-2px);box-shadow:0 7px 26px rgba(255,107,53,.42)}
+.btn-sm{padding:7px 16px;font-size:12px}
+.btn-del{background:rgba(255,80,80,.12);border:1px solid rgba(255,80,80,.28);color:#ff7b7b;padding:7px 14px;font-size:12px;font-weight:700;border-radius:50px;cursor:pointer;transition:.2s}
+.btn-del:hover{background:rgba(255,80,80,.25)}
 </style>
 </head>
 <body>
@@ -333,77 +304,6 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
   </div>
 </div>
 
-<!-- ══ ADMIN OVERLAY (hidden, secret access) ══ -->
-<div id="admin-overlay">
-  <div class="admin-wrap">
-    <button class="admin-close" onclick="closeAdmin()">✕</button>
-
-    <!-- Login -->
-    <div id="al-login" class="acard glass login-box">
-      <span class="lock">🔐</span>
-      <h2>Admin Panel</h2>
-      <p>Enter password to manage pricing</p>
-      <div style="margin-bottom:10px">
-        <input class="gi" type="password" id="apass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
-      </div>
-      <button class="btn btn-acc" style="width:100%" onclick="doLogin()">Unlock</button>
-      
-    </div>
-
-    <!-- Panel (shown after login) -->
-    <div id="al-panel" style="display:none">
-
-      <!-- B&W Prices -->
-      <div class="acard glass">
-        <div class="attl">⬛ Black &amp; White Pricing (₹/side)</div>
-        <div class="iform">
-          <div class="irow irow2">
-            <div class="igroup"><label>Single — Normal</label><input class="gi" type="number" id="e-bw-s" step="0.5"></div>
-            <div class="igroup"><label>Single — Bulk (30+ pages)</label><input class="gi" type="number" id="e-bw-bs" step="0.5"></div>
-          </div>
-          <div class="irow irow2">
-            <div class="igroup"><label>Double — Normal</label><input class="gi" type="number" id="e-bw-d" step="0.5"></div>
-            <div class="igroup"><label>Double — Bulk (30+ pages)</label><input class="gi" type="number" id="e-bw-bd" step="0.5"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Color Prices -->
-      <div class="acard glass">
-        <div class="attl">🌈 Color Pricing (₹/side)</div>
-        <div class="iform">
-          <div class="irow irow2">
-            <div class="igroup"><label>Single — Normal</label><input class="gi" type="number" id="e-c-s" step="0.5"></div>
-            <div class="igroup"><label>Single — Bulk (30+ pages)</label><input class="gi" type="number" id="e-c-bs" step="0.5"></div>
-          </div>
-          <div class="irow irow2">
-            <div class="igroup"><label>Double — Normal</label><input class="gi" type="number" id="e-c-d" step="0.5"></div>
-            <div class="igroup"><label>Double — Bulk (30+ pages)</label><input class="gi" type="number" id="e-c-bd" step="0.5"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Notes -->
-      <div class="acard glass">
-        <div class="attl">📌 Important Notes</div>
-        <div id="a-notes"></div>
-        <div class="divhr"></div>
-        <div style="display:flex;gap:8px">
-          <input class="gi" id="n-note" placeholder="Add a note..." style="flex:1">
-          <button class="btn btn-acc btn-sm" onclick="addNote()">Add</button>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:10px;justify-content:center;margin-top:8px">
-        <button class="btn btn-acc" onclick="savePrices()">💾 Save Prices</button>
-        <button class="btn-del" onclick="doLogout()" style="padding:10px 26px">🔒 Lock</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Secret tap zone: bottom-right corner, tap 5× quickly -->
-<div class="stap" onclick="secretTap()"></div>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
@@ -423,7 +323,6 @@ const save = ()=>localStorage.setItem('snk3',JSON.stringify(D));
 
 /* ─── STATE ─── */
 let S = {typeId:D.printTypes[0]?.id, side:'single', pages:1};
-let adminIn=false;
 
 /* ─── PARTICLES ─── */
 for(let i=0;i<16;i++){
@@ -648,76 +547,6 @@ function toggleInvNotes(){
   t.classList.toggle('open');
 }
 
-/* ─── SECRET ADMIN TAP ─── */
-let tapN=0,tapT=null;
-function secretTap(){
-  tapN++;clearTimeout(tapT);
-  tapT=setTimeout(()=>tapN=0,2000);
-  if(tapN>=5){tapN=0;openAdmin();}
-}
-function openAdmin(){document.getElementById('admin-overlay').classList.add('open');document.body.style.overflow='hidden';}
-function closeAdmin(){document.getElementById('admin-overlay').classList.remove('open');document.body.style.overflow='';}
-
-/* ─── LOGIN ─── */
-const PASS='admin123';
-function doLogin(){
-  if(document.getElementById('apass').value===PASS){
-    adminIn=true;
-    document.getElementById('al-login').style.display='none';
-    document.getElementById('al-panel').style.display='block';
-    renderAdmin();toast('Unlocked ✓','ok');
-  } else {
-    toast('Wrong password','err');
-    const e=document.getElementById('apass');e.style.animation='none';void e.offsetWidth;e.style.animation='shake .4s ease';
-  }
-}
-function doLogout(){adminIn=false;document.getElementById('al-panel').style.display='none';document.getElementById('al-login').style.display='block';document.getElementById('apass').value='';}
-
-/* ─── ADMIN RENDER ─── */
-function renderAdmin(){
-  if(!adminIn) return;
-  const bw = D.printTypes.find(t=>t.id==='bw');
-  const col = D.printTypes.find(t=>t.id==='color');
-  if(bw){
-    document.getElementById('e-bw-s').value  = bw.bw.single??'';
-    document.getElementById('e-bw-bs').value = bw.bw.bulkSingle??'';
-    document.getElementById('e-bw-d').value  = bw.bw.double??'';
-    document.getElementById('e-bw-bd').value = bw.bw.bulkDouble??'';
-  }
-  if(col){
-    document.getElementById('e-c-s').value   = col.col.single??'';
-    document.getElementById('e-c-bs').value  = col.col.bulkSingle??'';
-    document.getElementById('e-c-d').value   = col.col.double??'';
-    document.getElementById('e-c-bd').value  = col.col.bulkDouble??'';
-  }
-  const nl=document.getElementById('a-notes'); nl.innerHTML='';
-  D.notes.forEach((n,i)=>{
-    const d=document.createElement('div'); d.className='aitem';
-    d.innerHTML=`<div style="font-size:13px;color:rgba(255,255,255,.8);flex:1">${n}</div><button class="btn-del" onclick="delNote(${i})">✕</button>`;
-    nl.appendChild(d);
-  });
-}
-
-function savePrices(){
-  const bw  = D.printTypes.find(t=>t.id==='bw');
-  const col = D.printTypes.find(t=>t.id==='color');
-  if(bw){
-    bw.bw.single      = nv(document.getElementById('e-bw-s').value);
-    bw.bw.bulkSingle  = nv(document.getElementById('e-bw-bs').value);
-    bw.bw.double      = nv(document.getElementById('e-bw-d').value);
-    bw.bw.bulkDouble  = nv(document.getElementById('e-bw-bd').value);
-  }
-  if(col){
-    col.col.single     = nv(document.getElementById('e-c-s').value);
-    col.col.bulkSingle = nv(document.getElementById('e-c-bs').value);
-    col.col.double     = nv(document.getElementById('e-c-d').value);
-    col.col.bulkDouble = nv(document.getElementById('e-c-bd').value);
-  }
-  save(); renderTypeGrid(); calc(); toast('Prices saved ✓','ok');
-}
-
-function addNote(){const v=document.getElementById('n-note').value.trim();if(!v)return toast('Enter a note','err');D.notes.push(v);document.getElementById('n-note').value='';save();renderAdmin();renderNotes();toast('Note added','ok');}
-function delNote(i){D.notes.splice(i,1);save();renderAdmin();renderNotes();toast('Deleted','ok');}
 
 /* ─── TOAST ─── */
 function toast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type;void t.offsetWidth;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
